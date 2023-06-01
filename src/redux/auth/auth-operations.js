@@ -15,7 +15,7 @@ export const register = createAsyncThunk(
   'autn/register',
   async (credentials, thunkAPI) => {
     try {
-      const response = await axios.post('/users/register', credentials);
+      const response = await axios.post('users/register', credentials);
       setAuthHeader(response.data.token);
       return response.data;
     } catch (error) {
@@ -28,7 +28,7 @@ export const logIn = createAsyncThunk(
   'auth/login',
   async (credentials, thunkAPI) => {
     try {
-      const response = await axios.post('/users/login', credentials);
+      const response = await axios.post('users/login', credentials);
       setAuthHeader(response.data.token);
       return response.data;
     } catch (error) {
@@ -39,7 +39,7 @@ export const logIn = createAsyncThunk(
 
 export const logOut = createAsyncThunk('users/logOut', async (_, thunkAPI) => {
   try {
-    await axios.get('/users/logOut');
+    await axios.get('users/logOut');
     clearAuthHeader();
   } catch (error) {
     return thunkAPI.rejectWithValue(error.message);
@@ -50,7 +50,11 @@ export const addMyPet = createAsyncThunk(
   'user/addMyPet',
   async (credentials, { rejectWithValue }) => {
     try {
-      await axios.post('api/pets', credentials);
+      await axios.post('api/pets', credentials, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -68,15 +72,32 @@ export const updateUser = createAsyncThunk(
     }
     try {
       setAuthHeader(persistedToken);
-      const config = {
-        headers: {
-          Accept: '*/*',
-          Authorization: `Bearer ${persistedToken}`,
-          'Content-Type': 'application/json,multipart/form-data',
-        },
-      };
 
-      const response = await axios.patch('/user/auth/update', value, config);
+      const response = await axios.patch('users/data', value);
+
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+export const updateUserAvatar = createAsyncThunk(
+  '/auth/updateUser',
+  async ({ value }, thunkAPI) => {
+    const state = thunkAPI.getState();
+    const persistedToken = state.auth.token;
+
+    if (persistedToken === null) {
+      return thunkAPI.rejectWithValue('Unable to fetch user');
+    }
+    try {
+      setAuthHeader(persistedToken);
+
+      const response = await axios.patch('users/avatar', value, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
       return response.data;
     } catch (error) {
@@ -86,7 +107,7 @@ export const updateUser = createAsyncThunk(
 );
 
 export const deleteUsersAvatar = createAsyncThunk(
-  '/auth/updateUser/deleteUsersAvatar',
+  '/auth/deleteUsersAvatar',
   async (_, thunkAPI) => {
     const state = thunkAPI.getState();
     const persistedToken = state.auth.token;
@@ -96,7 +117,7 @@ export const deleteUsersAvatar = createAsyncThunk(
     }
     try {
       setAuthHeader(persistedToken);
-      const response = await axios.get('user/auth/deleteAvatar');
+      const response = await axios.delete('users/avatar');
 
       console.log(response.data);
       return response.data;
@@ -121,7 +142,7 @@ export const refreshUser = createAsyncThunk(
     try {
       // If there is a token, add it to the HTTP header and perform the request
       setAuthHeader(persistedToken);
-      const res = await axios.get('/users/current');
+      const res = await axios.get('users/current');
       return res.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);

@@ -2,7 +2,7 @@
   "name": "your-pet",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://DenisTunyk.github.io/your-pet/",
+  "homepage": "http://127.0.0.1:3001/",
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.5",
     "@testing-library/jest-dom": "^5.16.3",

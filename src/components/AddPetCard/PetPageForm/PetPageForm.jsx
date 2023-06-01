@@ -93,13 +93,13 @@ const AddPetPageForm = () => {
 
     const newFormData = new FormData();
 
-    newFormData.append('name', formData.name);
-    newFormData.append('birthday', formData.birthday);
-    newFormData.append('breed', formData.breed);
-    newFormData.append('pets-photo', formData.petPhoto);
+    newFormData.set('name', formData.name);
+    newFormData.set('birthday', formData.birthday);
+    newFormData.set('breed', formData.breed);
+    newFormData.set('pets-photo', formData.petPhoto);
 
     if (formData.comments) {
-      newFormData.append('comments', formData.comments);
+      newFormData.set('comments', formData.comments);
     }
 
     if (formData.category === 'my-pet') {

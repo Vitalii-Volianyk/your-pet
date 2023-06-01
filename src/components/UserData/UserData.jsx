@@ -1,9 +1,12 @@
 //import { ToastContainer, toast } from 'react-toastify';
 import { toast } from 'react-toastify';
-import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { LogoutBtn } from '../Buttons/LogoutBtn/LogoutBtn';
-import { updateUser, deleteUsersAvatar } from 'redux/auth/auth-operations';
+import {
+  updateUser,
+  deleteUsersAvatar,
+  updateUserAvatar,
+} from 'redux/auth/auth-operations';
 import { UserDataItem } from 'components/UserDataItem/UserDataItem';
 // ============
 import { useAuth } from '../../hooks/useAuth';
@@ -41,8 +44,9 @@ const imageExtensions = [
 
 export const UserData = ({ user }) => {
   const dispatch = useDispatch();
-  const [isDisabledBtn, setIsDisabledBtn] = useState(false);
-  const { email, name, birthday, phone, city, avatarURL } = useAuth();
+  const {
+    user: { email, name, birthday, phone, city, avatarURL },
+  } = useAuth();
 
   const handleFileChange = async e => {
     const splitToFindExtension = e.target.value.split('.');
@@ -59,8 +63,10 @@ export const UserData = ({ user }) => {
     const imgFile = e.target.files[0];
 
     if (imgFile) {
-      const value = { avatarURL: imgFile };
-      await dispatch(updateUser({ value }));
+      const value = new FormData();
+      value.append('image', imgFile);
+
+      await dispatch(updateUserAvatar({ value }));
     }
   };
 
@@ -73,13 +79,7 @@ export const UserData = ({ user }) => {
           <ImageWrapper>
             <StyledImage
               alt="user photo"
-              src={
-                avatarURL === null ||
-                avatarURL === undefined ||
-                avatarURL === ''
-                  ? noAvatar
-                  : avatarURL
-              }
+              src={!avatarURL ? noAvatar : avatarURL}
             />
             {avatarURL && (
               <CloseBtnWrapper
@@ -103,10 +103,8 @@ export const UserData = ({ user }) => {
 
         <UserItemWrapper>
           <UserDataItem
-            setIsDisabledBtn={setIsDisabledBtn}
-            isDisabledBtn={isDisabledBtn}
             field="name"
-            initValue={{ name }}
+            initValue={name ? { name } : { name: '' }}
             setUser={async value => {
               if (value.name === name) {
                 return;
@@ -115,10 +113,8 @@ export const UserData = ({ user }) => {
             }}
           ></UserDataItem>
           <UserDataItem
-            setIsDisabledBtn={setIsDisabledBtn}
-            isDisabledBtn={isDisabledBtn}
             field="email"
-            initValue={{ email }}
+            initValue={email ? { email } : { email: '' }}
             setUser={async value => {
               if (value.email === email) {
                 return;
@@ -127,15 +123,12 @@ export const UserData = ({ user }) => {
             }}
           ></UserDataItem>
           <UserDataItem
-            setIsDisabledBtn={setIsDisabledBtn}
-            isDisabledBtn={isDisabledBtn}
             field="birthday"
-            initValue={{
-              birthday:
-                birthday === null || birthday === '00.00.0000'
-                  ? '00.00.0000'
-                  : getBirthdayString(birthday),
-            }}
+            initValue={
+              birthday
+                ? { birthday: getBirthdayString(birthday) }
+                : { birthday: '00.00.0000' }
+            }
             setUser={async value => {
               if (value.birthday === birthday) {
                 return;
@@ -144,10 +137,8 @@ export const UserData = ({ user }) => {
             }}
           ></UserDataItem>
           <UserDataItem
-            setIsDisabledBtn={setIsDisabledBtn}
-            isDisabledBtn={isDisabledBtn}
             field="phone"
-            initValue={{ phone }}
+            initValue={phone ? { phone } : { phone: '' }}
             setUser={async value => {
               if (value.phone === phone) {
                 return;
@@ -156,11 +147,10 @@ export const UserData = ({ user }) => {
             }}
           ></UserDataItem>
           <UserDataItem
-            setIsDisabledBtn={setIsDisabledBtn}
-            isDisabledBtn={isDisabledBtn}
             field="city"
-            initValue={{ city }}
+            initValue={city ? { city } : { city: '' }}
             setUser={async value => {
+              console.log(value);
               if (value.city === city) {
                 return;
               }

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-// import { Field } from 'formik';
+import { Field } from 'formik';
 
 export const Container = styled.div`
   display: flex;
@@ -29,7 +29,7 @@ export const StyledValue = styled.p`
   letter-spacing: 0.04em;
 `;
 
-export const Input = styled.input`
+export const Input = styled(Field)`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -38,13 +38,16 @@ export const Input = styled.input`
   height: 32px;
   border: 1px solid #54adff;
   border-radius: 20px;
-  min-width:190px;
+  min-width: 190px;
 
-    @media screen and (min-width: 768px) {  min-width: 255px;}
-  
+  @media screen and (min-width: 768px) {
+    min-width: 255px;
+  }
+
   &:focus,
   &:hover {
-  box-shadow: 2px 2px 4px #456a8e84;
+    box-shadow: 2px 2px 4px #456a8e84;
+  }
 `;
 
 export const Label = styled.label`
@@ -63,7 +66,7 @@ export const Label = styled.label`
   }
 `;
 
-export const Button = styled.span`
+export const Button = styled.button`
   padding: 0;
   border: none;
   background-color: transparent;
